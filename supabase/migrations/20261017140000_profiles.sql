@@ -113,23 +113,26 @@ create policy "Admins can update any profile"
 -- There is no insert or delete policy on purpose. The signup trigger creates
 -- the row. People do not delete profiles from the app.
 
+-- security invoker on purpose: current_user is then the real caller.
+-- The app connects as "authenticated". The SQL editor and the database's own
+-- point-counting triggers run as "postgres", so they may change these fields.
 create or replace function private.protect_profile_privileges()
 returns trigger
 language plpgsql
-security definer
+security invoker
 set search_path = public
 as $$
+declare
+  from_app boolean := current_user in ('authenticated', 'anon');
 begin
-  -- Reputation is earned later by the database, not typed into a form.
-  if new.reputation is distinct from old.reputation
-     and coalesce(auth.role(), '') is distinct from 'service_role' then
+  -- Reputation is earned through votes and accepted answers, never typed in.
+  if from_app and new.reputation is distinct from old.reputation then
     raise exception 'Reputation cannot be edited by hand';
   end if;
 
-  -- The SQL editor has no signed-in user, so the founder can promote the
-  -- first admin there. A signed-in person can change roles only if they
-  -- are already an admin.
-  if auth.uid() is not null and not private.is_admin() then
+  -- A signed-in person can change roles only if they are already an admin.
+  -- The founder promotes the very first admin in the SQL editor.
+  if from_app and not private.is_admin() then
     if new.role is distinct from old.role then
       raise exception 'Only an admin can change roles';
     end if;
