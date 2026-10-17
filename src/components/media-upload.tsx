@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState } from "react"
+import { useEffect, useId, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { MAX_UPLOAD_BYTES, visibilityLabel, type Visibility } from "@/lib/labels"
@@ -43,6 +43,7 @@ export function MediaUpload({
   required?: boolean
 }) {
   const fieldId = useId()
+  const inputRef = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<Status>({ step: "empty" })
   const [visibility, setVisibility] = useState<Visibility>(visibilities[0] ?? "members")
   const [muteAudio, setMuteAudio] = useState(false)
@@ -105,6 +106,17 @@ export function MediaUpload({
     setStatus({ step: "done", id: data.id as string, fileName: file.name })
   }
 
+  // On a slow phone someone can pick a file before the page is ready, and that
+  // choice would be missed. Pick it up once the page is ready.
+  const uploadRef = useRef(upload)
+  useEffect(() => {
+    uploadRef.current = upload
+  })
+  useEffect(() => {
+    const early = inputRef.current?.files?.[0]
+    if (early) void uploadRef.current(early)
+  }, [])
+
   return (
     <fieldset className="flex flex-col gap-2 rounded-lg border p-3">
       <legend className="px-1 text-sm font-medium">{label}</legend>
@@ -158,6 +170,7 @@ export function MediaUpload({
         </div>
       ) : (
         <input
+          ref={inputRef}
           id={fieldId}
           type="file"
           accept={kind === "video" ? VIDEO_TYPES : IMAGE_TYPES}
