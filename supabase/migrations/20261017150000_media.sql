@@ -138,9 +138,11 @@ grant all on table public.media_assets to service_role;
 
 alter table public.media_assets enable row level security;
 
+-- The owner check must come first and read the column directly: on
+-- "insert ... returning", can_view_media() cannot see the row being inserted yet.
 create policy "Members see media they are allowed to see"
   on public.media_assets for select to authenticated
-  using (private.can_view_media(id));
+  using (owner_id = auth.uid() or private.can_view_media(id));
 
 create policy "Members register their own uploads"
   on public.media_assets for insert to authenticated

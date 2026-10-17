@@ -77,6 +77,16 @@ insert into public.media_assets (id, owner_id, kind, storage_path, visibility, d
 values ('10000000-0000-4000-8000-000000000002', auth.uid(), 'video', '00000000-0000-4000-8000-00000000000c/long.mp4', 'members', 120);
 insert into public.media_assets (id, owner_id, kind, storage_path, visibility, duration_seconds)
 values ('10000000-0000-4000-8000-000000000003', auth.uid(), 'video', '00000000-0000-4000-8000-00000000000c/private.mp4', 'teachers', 20);
+-- The upload field inserts and reads the new id back in one step.
+do $$
+declare new_id uuid;
+begin
+  insert into public.media_assets (owner_id, kind, storage_path, visibility, duration_seconds)
+  values (auth.uid(), 'video', '00000000-0000-4000-8000-00000000000c/returning.mp4', 'teachers', 5)
+  returning id into new_id;
+  if new_id is null then raise exception 'FAIL: uploader could not read back their new media row'; end if;
+  raise notice 'ok: uploader reads back the new media row';
+end $$;
 select test.expect_error($$insert into public.media_assets (owner_id, kind, storage_path, duration_seconds)
   values (auth.uid(), 'video', '00000000-0000-4000-8000-00000000000d/x.mp4', 10)$$, 'media_path_in_owner_folder');
 select test.expect_error($$insert into public.media_assets (owner_id, kind, storage_path, visibility, duration_seconds)
