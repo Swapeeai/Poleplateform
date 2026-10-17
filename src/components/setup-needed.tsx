@@ -11,7 +11,7 @@ export function SetupNeeded() {
       <CardContent>
         <ol className="list-decimal space-y-2 pl-5 text-base leading-6">
           <li>Create a Supabase project.</li>
-          <li>Run the SQL file in supabase/migrations.</li>
+          <li>Run the SQL files in supabase/migrations, in name order, then supabase/seed.sql.</li>
           <li>Copy the project URL and anon key into .env.local.</li>
           <li>Restart the app.</li>
         </ol>

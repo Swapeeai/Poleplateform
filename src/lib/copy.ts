@@ -44,11 +44,11 @@ export const copy = {
   notSet: "Not set",
   chooseLevel: "Choose a level",
   optional: "Optional",
-  avatarHint: "Paste a link to a picture. Uploading a file comes later.",
+  avatarHint: "Paste a link to a picture.",
   studioHint: "Only if you teach at a studio.",
   instagramHint: "Your handle, without the @.",
   yearsHint: "How many years you have been dancing. 0 is fine.",
-  reputationHint: "Starts at 0. Points come later. You cannot edit this.",
+  reputationHint: "You earn points when people find your questions and answers helpful. You cannot edit this.",
   finishProfileTitle: "Finish your profile",
   finishProfileBody:
     "Add your country, level, and how long you have been dancing. Other people will see this.",
