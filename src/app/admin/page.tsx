@@ -1,62 +1,45 @@
 import { Suspense } from "react"
-import { MemberForm } from "@/components/member-form"
+import { AdminDenied } from "@/components/admin-denied"
+import { ListLink } from "@/components/bits"
+import { PageHeader } from "@/components/fields"
 import { PageFallback } from "@/components/page-fallback"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { requireUser } from "@/lib/auth"
-import { copy } from "@/lib/copy"
-import { toMember, type Member } from "@/lib/profile"
+import { isAdmin, requireUser } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
 
 export default function AdminPage() {
   return (
-    <Suspense fallback={<PageFallback label="Loading members…" />}>
-      <AdminContent />
+    <Suspense fallback={<PageFallback />}>
+      <AdminHub />
     </Suspense>
   )
 }
 
-async function AdminContent() {
+async function AdminHub() {
   const session = await requireUser()
-
-  if (session.profile?.role !== "admin") {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{copy.adminDenied}</CardTitle>
-          <CardDescription>{copy.adminDeniedBody}</CardDescription>
-        </CardHeader>
-      </Card>
-    )
-  }
+  if (!isAdmin(session)) return <AdminDenied />
 
   const supabase = await createClient()
-  const { data, error } = await supabase.rpc("admin_list_members")
-  const members = Array.isArray(data)
-    ? data.map((row) => toMember(row)).filter((row): row is Member => row !== null)
-    : []
+  const { count } = await supabase
+    .from("reports")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "open")
 
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{copy.adminTitle}</h1>
-        <p className="mt-2 text-base text-muted-foreground">{copy.adminLead}</p>
+    <div className="flex flex-col gap-5">
+      <PageHeader title="Admin" lead="Everything only you can change." />
+      <div className="flex flex-col">
+        <ListLink
+          href="/admin/reports"
+          title="Reports"
+          sub="Posts members flagged as a problem"
+          side={count ? `${count} open` : "None open"}
+        />
+        <ListLink href="/admin/moves" title="Moves" sub="Add and edit moves, other names, demo videos" />
+        <ListLink href="/admin/courses" title="Courses" sub="Courses, lessons, and who has access" />
+        <ListLink href="/admin/challenges/new" title="New weekly challenge" sub="Pick moves and dates" />
+        <ListLink href="/play/plans/new" title="Suggested class plan" sub="A plan every teacher can see" />
+        <ListLink href="/admin/members" title="Members" sub="Make someone a teacher, verify teachers" />
       </div>
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {copy.notAllowed}
-        </p>
-      ) : null}
-      <Card>
-        <CardContent>
-          {members.length === 0 ? (
-            <p className="text-base text-muted-foreground">{copy.adminEmpty}</p>
-          ) : (
-            members.map((member) => (
-              <MemberForm key={member.id} member={member} isYou={member.id === session.userId} />
-            ))
-          )}
-        </CardContent>
-      </Card>
     </div>
   )
 }

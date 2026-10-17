@@ -48,7 +48,7 @@ export async function updateMember(
   if (error) return { error: friendlyDbError(error.message) }
   if (!data) return { error: copy.notAllowed }
 
-  revalidatePath("/admin")
+  revalidatePath("/admin/members")
   revalidatePath("/")
   revalidatePath("/profile")
   return { message: copy.saved }

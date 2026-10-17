@@ -6,7 +6,9 @@ export const APP_NAME = "APP_NAME"
 
 export const copy = {
   metaDescription:
-    "Sign in, set up your profile, and see your role. Questions, videos, and courses come in later steps.",
+    "Ask the Pole for feedback on your moves, explore the move dictionary and combos, and take mini-courses.",
+  me: "Me",
+  admin: "Admin",
   signInTitle: "Sign in",
   signUpTitle: "Create an account",
   signInLead: "You need an account to use the app.",
@@ -50,9 +52,7 @@ export const copy = {
   finishProfileTitle: "Finish your profile",
   finishProfileBody:
     "Add your country, level, and how long you have been dancing. Other people will see this.",
-  homeLead: "You are signed in. This step is accounts and profiles.",
-  homeLater:
-    "The move dictionary, videos, questions, combos, and payments are not built yet.",
+  homeLead: "Three things to do here.",
   profileMissing:
     "There is no profile for this login. The signup step in the database may not have run. Apply the migration in supabase/migrations, then sign up again.",
   adminTitle: "Members",

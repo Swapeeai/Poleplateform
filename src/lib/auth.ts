@@ -44,3 +44,15 @@ export async function requireUser(): Promise<CurrentSession> {
   if (!session) redirect("/sign-in")
   return session
 }
+
+/**
+ * True when the person is an admin. Pages use it to hide admin screens.
+ * The real protection is in the database rules, which check again.
+ */
+export function isAdmin(session: CurrentSession): boolean {
+  return session.profile?.role === "admin"
+}
+
+export function isTeacher(session: CurrentSession): boolean {
+  return session.profile?.role === "teacher" || session.profile?.role === "admin"
+}

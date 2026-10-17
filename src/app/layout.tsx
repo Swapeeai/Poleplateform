@@ -32,7 +32,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={<HeaderFallback />}>
           <SiteHeader />
         </Suspense>
-        <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-4 py-6">{children}</main>
+        {/* Bottom padding keeps the last item clear of the tab bar. */}
+        <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-4 pt-6 pb-24">{children}</main>
       </body>
     </html>
   )
