@@ -124,7 +124,17 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Browsers let a fieldset grow to fit long select options, which pushes
+     the page wider than a phone screen. */
+  fieldset {
+    min-width: 0;
+  }
+  select {
+    max-width: 100%;
+  }
   html {
     @apply font-sans;
+    /* Keeps a focused field above the fixed bottom tab bar. */
+    scroll-padding-bottom: 5rem;
   }
 }

@@ -1,8 +1,11 @@
 import type { ReactNode } from "react"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
-/** Plain form fields with a label and an optional hint, sized for thumbs. */
+/**
+ * Plain form fields with a label and an optional hint, sized for thumbs.
+ * Each label wraps its own field, so the same form can appear several
+ * times on one page (e.g. one per lesson) without mixing up fields.
+ */
 
 const boxClass = "w-full rounded-lg border border-input bg-transparent px-2.5 text-base"
 
@@ -27,18 +30,19 @@ export function TextField({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Label htmlFor={name}>{label}</Label>
-      <Input
-        id={name}
-        name={name}
-        type={type}
-        defaultValue={defaultValue ?? undefined}
-        required={required}
-        maxLength={maxLength}
-        placeholder={placeholder}
-        step={type === "number" ? "any" : undefined}
-        className="h-11 text-base"
-      />
+      <label className="flex flex-col gap-1.5 text-sm font-medium">
+        {label}
+        <Input
+          name={name}
+          type={type}
+          defaultValue={defaultValue ?? undefined}
+          required={required}
+          maxLength={maxLength}
+          placeholder={placeholder}
+          step={type === "number" ? "any" : undefined}
+          className="h-11 text-base font-normal"
+        />
+      </label>
       {hint ? <p className="text-sm text-muted-foreground">{hint}</p> : null}
     </div>
   )
@@ -65,17 +69,18 @@ export function TextArea({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Label htmlFor={name}>{label}</Label>
-      <textarea
-        id={name}
-        name={name}
-        defaultValue={defaultValue ?? undefined}
-        required={required}
-        maxLength={maxLength}
-        rows={rows}
-        placeholder={placeholder}
-        className={`${boxClass} py-2`}
-      />
+      <label className="flex flex-col gap-1.5 text-sm font-medium">
+        {label}
+        <textarea
+          name={name}
+          defaultValue={defaultValue ?? undefined}
+          required={required}
+          maxLength={maxLength}
+          rows={rows}
+          placeholder={placeholder}
+          className={`${boxClass} py-2 font-normal`}
+        />
+      </label>
       {hint ? <p className="text-sm text-muted-foreground">{hint}</p> : null}
     </div>
   )
@@ -97,14 +102,13 @@ export function SelectField({
   blank?: string
 }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={name}>{label}</Label>
+    <label className="flex flex-col gap-1.5 text-sm font-medium">
+      {label}
       <select
-        id={name}
         name={name}
         defaultValue={defaultValue ?? ""}
         required={required}
-        className={`${boxClass} h-11`}
+        className={`${boxClass} h-11 font-normal`}
       >
         {blank !== undefined ? <option value="">{blank}</option> : null}
         {options.map((option) => (
@@ -113,7 +117,7 @@ export function SelectField({
           </option>
         ))}
       </select>
-    </div>
+    </label>
   )
 }
 
@@ -130,7 +134,13 @@ export function CheckField({
 }) {
   return (
     <label className="flex items-start gap-3 text-base">
-      <input type="checkbox" name={name} value="yes" defaultChecked={defaultChecked} className="mt-1 size-5" />
+      <input
+        type="checkbox"
+        name={name}
+        value="yes"
+        defaultChecked={defaultChecked}
+        className="mt-1 size-5"
+      />
       <span>
         {label}
         {hint ? <span className="block text-sm text-muted-foreground">{hint}</span> : null}
@@ -139,7 +149,15 @@ export function CheckField({
   )
 }
 
-export function PageHeader({ title, lead, children }: { title: string; lead?: string; children?: ReactNode }) {
+export function PageHeader({
+  title,
+  lead,
+  children,
+}: {
+  title: string
+  lead?: string
+  children?: ReactNode
+}) {
   return (
     <div className="flex flex-col gap-2">
       <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
